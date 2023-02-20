@@ -3,6 +3,8 @@ package me.jamespurvis.version6restapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,16 +17,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Configuration
 public class WebSecurityConfig {
 
+    public String[] WHITELIST = {
+            "/api/avatar/**",
+
+    };
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors().disable()
-                .csrf().disable()
+                .cors()
+                .and()
+                .csrf()
+                .disable()
                 .exceptionHandling()
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/avatar/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers(HttpMethod.GET, WHITELIST)
+                .permitAll()
+                .requestMatchers(HttpMethod.POST, WHITELIST)
+                .permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .httpBasic();
 
